@@ -28,6 +28,7 @@ function write(k, x) {
 
 function show(src, s) {
   current = s;
+  renderAtt();
   for (const k of Object.keys(F)) if (k !== src) setError(k);
   if (src !== 'dbm') F.dbm.input.value = fmtDbm(s.dbm);
   if (src !== 'w') write('w', s.w);
