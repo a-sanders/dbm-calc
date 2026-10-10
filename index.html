@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dBm, watts and volts calculator</title>
+<style>
+:root{color-scheme:light dark;--bg:#f3f5f7;--surface:#fff;--ink:#17212b;--mute:#566474;--line:#c9d2da;--accent:#0a5c8f;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#10161c;--surface:#18212a;--ink:#e6ecf1;--mute:#9aa8b5;--line:#2c3945;--accent:#6cb6e6;--bad:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.1rem;margin:28px 0 8px}
+p{margin:0}.hint{color:var(--mute)}
+.panel{display:grid;gap:20px;margin-top:20px}
+@media(min-width:760px){.panel{grid-template-columns:1fr 1fr}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+.box h2{margin-top:0}
+label{display:block;font-weight:600;margin-bottom:4px}
+.field+.field{margin-top:14px}
+.row{display:flex;gap:8px}
+input,select{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px;min-width:0}
+input{flex:1;font-size:1.15rem}
+input[aria-invalid=true]{border-color:var(--bad);outline:1px solid var(--bad)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.err{color:var(--bad);min-height:1.5em;font-size:.9rem}
+dl{margin:0}dt{color:var(--mute);font-size:.9rem;margin-top:12px}dt:first-child{margin-top:0}
+dd{margin:0;overflow-wrap:anywhere}
+.big{font-size:1.5rem;font-weight:600}
+.scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<main>
+<h1>dBm, watts and volts</h1>
+<p class="hint">Enter any one value. The other two update as you type.</p>
+
+<div class="panel">
+<form class="box" onsubmit="return false" novalidate>
+  <div class="field">
+    <label for="dbm">Power in dBm</label>
+    <div class="row"><input id="dbm" inputmode="text" autocomplete="off" aria-describedby="dbm-err" placeholder="e.g. -30"></div>
+    <p class="err" id="dbm-err"></p>
+  </div>
+  <div class="field">
+    <label for="w">Power</label>
+    <div class="row"><input id="w" inputmode="decimal" autocomplete="off" aria-describedby="w-err" placeholder="e.g. 5"><select id="w-unit" aria-label="Power unit"></select></div>
+    <p class="err" id="w-err"></p>
+  </div>
+  <div class="field">
+    <label for="v">Voltage (RMS)</label>
+    <div class="row"><input id="v" inputmode="decimal" autocomplete="off" aria-describedby="v-err" placeholder="e.g. 0.5"><select id="v-unit" aria-label="Voltage unit"></select></div>
+    <p class="err" id="v-err"></p>
+  </div>
+</form>
+
+<section class="box" aria-labelledby="res-h">
+  <h2 id="res-h">Result at R = 50 Ω</h2>
+  <dl aria-live="polite">
+    <dt>Power level</dt><dd class="big" id="r-dbm"></dd>
+    <dt>Power</dt><dd class="big" id="r-w-auto"></dd><dd id="r-w-base"></dd>
+    <dt>Voltage (RMS)</dt><dd class="big" id="r-v-auto"></dd><dd id="r-v-base"></dd>
+  </dl>
+</section>
+</div>
+
+</main>
+<script type="module" src="src/app.js"></script>
+</body>
+</html>
