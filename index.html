@@ -23,6 +23,9 @@ input,select{font:inherit;color:inherit;background:var(--bg);border:1px solid va
 input{flex:1;font-size:1.15rem}
 input[aria-invalid=true]{border-color:var(--bad);outline:1px solid var(--bad)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 14px;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+#add-stage{margin-top:6px}
 .err{color:var(--bad);min-height:1.5em;font-size:.9rem}
 dl{margin:0}dt{color:var(--mute);font-size:.9rem;margin-top:12px}dt:first-child{margin-top:0}
 dd{margin:0;overflow-wrap:anywhere}
@@ -64,6 +67,25 @@ dd{margin:0;overflow-wrap:anywhere}
 </section>
 </div>
 
+
+<div class="panel">
+<section class="box" aria-labelledby="att-h">
+  <h2 id="att-h">Attenuator</h2>
+  <p class="hint">Attenuates the level entered above. Add stages to cascade several attenuators.</p>
+  <div id="stages" style="margin-top:14px"></div>
+  <button type="button" id="add-stage">Add stage</button>
+</section>
+
+<section class="box" aria-labelledby="att-res-h">
+  <h2 id="att-res-h">After the attenuator</h2>
+  <dl aria-live="polite">
+    <dt>Total attenuation</dt><dd class="big" id="att-total"></dd>
+    <dt>Output level</dt><dd class="big" id="att-dbm"></dd>
+    <dt>Output power</dt><dd class="big" id="att-w-auto"></dd><dd id="att-w-base"></dd>
+    <dt>Output voltage (RMS)</dt><dd class="big" id="att-v-auto"></dd><dd id="att-v-base"></dd>
+  </dl>
+</section>
+</div>
 </main>
 <script type="module" src="src/app.js"></script>
 </body>

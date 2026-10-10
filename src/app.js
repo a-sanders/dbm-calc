@@ -27,6 +27,7 @@ function write(k, x) {
 }
 
 function show(src, s) {
+  current = s;
   for (const k of Object.keys(F)) if (k !== src) setError(k);
   if (src !== 'dbm') F.dbm.input.value = fmtDbm(s.dbm);
   if (src !== 'w') write('w', s.w);
@@ -46,6 +47,8 @@ function update(k) {
   if (p.empty) {
     for (const o of Object.keys(F)) if (o !== k) { F[o].input.value = ''; setError(o); }
     clearResults();
+    current = null;
+    renderAtt();
     return;
   }
   show(k, solve(k, k === 'dbm' ? p.value : toBase(p.value, f.unit.value), R));
@@ -56,4 +59,55 @@ for (const k of Object.keys(F)) {
   F[k].unit?.addEventListener('change', () => update(k));
 }
 
+// ---- Attenuator: one or more cascaded stages applied to the level above ----
+let current = null; // last valid { dbm, w, v } from the calculator
+const stagesEl = $('stages');
+let stageSeq = 0;
+
+function renumber() {
+  [...stagesEl.children].forEach((w, i) => {
+    w.querySelector('label').textContent = `Stage ${i + 1}, dB`;
+    const b = w.querySelector('button');
+    b.setAttribute('aria-label', `Remove stage ${i + 1}`);
+    b.disabled = stagesEl.children.length === 1;
+  });
+}
+
+function renderAtt() {
+  let total = 0, any = false, bad = false;
+  for (const w of stagesEl.children) {
+    const input = w.querySelector('input');
+    const p = parseInput(input.value, { nonNegative: true });
+    input.setAttribute('aria-invalid', p.error ? 'true' : 'false');
+    w.querySelector('.err').textContent = p.error || '';
+    if (p.error) bad = true;
+    else if (!p.empty) { total += p.value; any = true; }
+  }
+  const ids = ['att-total', 'att-dbm', 'att-w-auto', 'att-w-base', 'att-v-auto', 'att-v-base'];
+  ids.forEach((id) => out(id, '—'));
+  if (bad || !any) return;
+  out('att-total', `${fmtDbm(total)} dB`);
+  if (!current) return;
+  const s = solve('dbm', current.dbm - total, R);
+  out('att-dbm', `${fmtDbm(s.dbm)} dBm`);
+  out('att-w-auto', fmtAuto(s.w, P_UNITS));
+  out('att-w-base', fmtBase(s.w, 'W'));
+  out('att-v-auto', fmtAuto(s.v, V_UNITS));
+  out('att-v-base', fmtBase(s.v, 'V'));
+}
+
+function addStage() {
+  const id = `stage-${++stageSeq}`;
+  const wrap = document.createElement('div');
+  wrap.className = 'field';
+  wrap.innerHTML = `<label for="${id}"></label><div class="row"><input id="${id}" inputmode="decimal" autocomplete="off" placeholder="e.g. 10" aria-describedby="${id}-err"><button type="button">Remove</button></div><p class="err" id="${id}-err"></p>`;
+  wrap.querySelector('input').addEventListener('input', renderAtt);
+  wrap.querySelector('button').addEventListener('click', () => { wrap.remove(); renumber(); renderAtt(); });
+  stagesEl.append(wrap);
+  renumber();
+  renderAtt();
+}
+$('add-stage').addEventListener('click', () => { addStage(); stagesEl.lastElementChild.querySelector('input').focus(); });
+
 clearResults();
+addStage();
